@@ -1,0 +1,46 @@
+<!-- templates/index.html -->
+
+<{% extends 'base.html' %}
+
+{% block head %}
+<title>Storage Management</title>
+{% endblock %}
+
+{% block body %}
+    <div class="form"></div>
+        <form action="/add_item" method="post">
+            <input type="text" name="client_name" placeholder="Client Name" required>
+            <input type="text" name="gst_number" placeholder="GST Number" required>
+            <input type="date" name="start_date" required>
+            <input type="date" name="end_date" required>
+            <input type="number" name="rate_per_day" placeholder="Rate per Day" step="0.01" required>
+            <button type="submit">Add Item</button>
+        </form>
+    </div>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>GST Number</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Rate Per Day</th>
+            <th>Bill Amount</th>
+            <th>Actions</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.client_name }}</td>
+            <td>{{ item.gst_number }}</td>
+            <td>{{ item.start_date.date() }}</td>
+            <td>{{ item.end_date.date() }}</td>
+            <td>{{ item.rate_per_day }}</td>
+            <td>{{ item.bill_amount  }}</td>
+            <td>
+                <a href="/remove_item/{{item.id}}">Delete</a>
+                <br>
+                <a href="/update/{{item.id}}">Update</a>
+            </td> 
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
