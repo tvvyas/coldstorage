@@ -8,8 +8,9 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
 
-with app.app_context():
-    db.create_all()
+
+#with app.app_context():
+#   db.create_all()
 
 # Initialize the database
 class Todo(db.Model):
@@ -19,14 +20,16 @@ class Todo(db.Model):
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
     rate_per_day = db.Column(db.REAL, nullable=False)
+    qnty_number = db.Column(db.REAL, nullable=False)
     bill_amount = db.Column(db.REAL, nullable=False)
 
-    def __init__(self, client_name, gst_number, start_date,end_date,rate_per_day,bill_amount):
+    def __init__(self, client_name, gst_number, start_date,end_date,rate_per_day,qnty_number,bill_amount):
         self.client_name = client_name
         self.gst_number = gst_number
         self.start_date = start_date
         self.end_date=end_date
         self.rate_per_day=rate_per_day
+        self.qnty_number = qnty_number
         self.bill_amount=bill_amount
 
 
@@ -42,12 +45,13 @@ def add_item():
     start_date = datetime.datetime.strptime(request.form.get('start_date'), '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(request.form.get('end_date'), '%Y-%m-%d').date()
     rate_per_day = float(request.form.get('rate_per_day'))
+    qnty_number = float(request.form.get('qnty_number'))
 
     # Calculate bill amount based on start and end dates
     days_stored = (end_date - start_date).days
     bill_amount = rate_per_day * days_stored
 
-    new_task = Todo(client_name,gst_number,start_date,end_date,rate_per_day,bill_amount)
+    new_task = Todo(client_name,gst_number,start_date,end_date,rate_per_day,qnty_number,bill_amount)
     
     try:
             db.session.add(new_task)
@@ -81,6 +85,12 @@ def update(item_id):
         item.start_date = datetime.datetime.strptime(request.form['start_date'], '%Y-%m-%d').date()
         item.end_date = datetime.datetime.strptime(request.form['end_date'], '%Y-%m-%d').date()
         item.rate_per_day = float(request.form['rate_per_day'])
+        item.qnty_number = float(request.form['qnty_number'])
+        
+        # Calculate updated bill amount based on start and end dates
+        days_stored = (item.end_date - item.start_date).days
+        item.bill_amount = item.rate_per_day * days_stored
+
 
         try:
             db.session.commit()
